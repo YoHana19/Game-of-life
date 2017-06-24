@@ -2,42 +2,51 @@
 //  GameScene.swift
 //  Gameoflife
 //
-//  Created by yo hanashima on 2017/06/13.
-//  Copyright © 2017年 yo hanashima. All rights reserved.
+//  Created by Martin Walsh on 21/04/2016.
+//  Copyright (c) 2016 Make School. All rights reserved.
 //
 
 import SpriteKit
-import GameplayKit
 
 class GameScene: SKScene {
-    
-    /* UI Objects */
-//    var stepButton: MSButtonNode!
-//    var playButton: MSButtonNode!
-//    var pauseButton: MSButtonNode!
-    var populationLabel: SKLabelNode!
-    var generationLabel: SKLabelNode!
     
     /* Game objects */
     var gridNode: Grid!
     
+    /* UI Objects */
+    var stepButton: MSButtonNode!
+    var populationLabel: SKLabelNode!
+    var generationLabel: SKLabelNode!
+    var playButton: MSButtonNode!
+    var pauseButton: MSButtonNode!
+    
     override func didMove(to view: SKView) {
         /* Setup your scene here */
         
-//        /* Set UI connections */
-//        stepButton = self.childNode(withName: "stepButton") as! MSButtonNode
-//        
-//        /* Setup testing button selected handler */
-//        stepButton.selectedHandler = {
-//            self.stepSimulation()
-//        }
+        /* Connect scene objects */
+        gridNode = childNode(withName: "gridNode") as! Grid
         
-//        playButton = self.childNode(withName: "playButton") as! MSButtonNode
-//        pauseButton = self.childNode(withName: "pauseButton") as! MSButtonNode
-        populationLabel = self.childNode(withName: "populationLabel") as! SKLabelNode
-        generationLabel = self.childNode(withName: "generationLabel") as! SKLabelNode
+        /* Connect UI scene objects */
+        stepButton = childNode(withName: "stepButton") as! MSButtonNode
+        populationLabel = childNode(withName: "populationLabel") as! SKLabelNode
+        generationLabel = childNode(withName: "generationLabel") as! SKLabelNode
+        playButton = childNode(withName: "playButton") as! MSButtonNode
+        pauseButton = childNode(withName: "pauseButton") as! MSButtonNode
         
-        gridNode = self.childNode(withName: "gridNode") as! Grid
+        /* Setup play button selected handler */
+        playButton.selectedHandler = { [unowned self] in
+            self.isPaused = false
+        }
+        
+        /* Setup pause button selected handler */
+        pauseButton.selectedHandler = { [unowned self] in
+            self.isPaused = true
+        }
+        
+        /* Setup pause button selected handler */
+        stepButton.selectedHandler = {
+            self.stepSimulation()
+        }
         
         /* Create an SKAction based timer, 0.5 second delay */
         let delay = SKAction.wait(forDuration: 0.5)
@@ -55,16 +64,16 @@ class GameScene: SKScene {
         self.run(simulation)
         
         /* Default simulation to pause state */
-        self.isPaused = false
+        self.isPaused = true
 
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         /* Called when a touch begins */
     }
-    
+   
     override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
+        /* Called before each frame is rendered */
     }
     
     func stepSimulation() {
@@ -75,6 +84,8 @@ class GameScene: SKScene {
         
         /* Update UI label objects */
         populationLabel.text = String(gridNode.population)
-        generationLabel.text = String(gridNode.generation)
+        generationLabel.text = String(gridNode.generation)  
     }
 }
+
+// test

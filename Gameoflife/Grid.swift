@@ -1,3 +1,11 @@
+//
+//  Grid.swift
+//  Gameoflife
+//
+//  Created by Martin Walsh on 21/04/2016.
+//  Copyright © 2016 Make School. All rights reserved.
+//
+
 import SpriteKit
 
 class Grid: SKSpriteNode {
@@ -6,53 +14,16 @@ class Grid: SKSpriteNode {
     let rows = 8
     let columns = 10
     
+    /* Individual cell dimension, auto-calculated */
+    var cellWidth = 0
+    var cellHeight = 0
+    
     /* Creature Array */
     var gridArray = [[Creature]]()
     
     /* Counters */
     var generation = 0
     var population = 0
-    
-    /* Individual cell dimension, calculated in setup*/
-    var cellWidth = 0
-    var cellHeight = 0
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        /* Called when a touch begins */
-        
-        /* There will only be one touch as multi touch is not enabled by default */
-        for touch in touches {
-            
-            /* Grab position of touch relative to the grid */
-            let location  = touch.location(in: self)
-            let gridX = Int(location.x) / cellWidth
-            let gridY = Int(location.y) / cellHeight
-            
-            /* Toggle creature visibility */
-            let creature = gridArray[gridX][gridY]
-            creature.isAlive = !creature.isAlive
-        }
-    }
-    
-    /* You are required to implement this for your subclass to work */
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-        /* Enable own touch implementation for this node */
-        isUserInteractionEnabled = true
-        
-        /* Calculate individual cell dimensions */
-        cellWidth = Int(size.width) / columns
-        cellHeight = Int(size.height) / rows
-        
-        /* Populate grid with creatures */
-        populateGrid()
-        
-        gridArray[1][3].isAlive = true
-        gridArray[1][4].isAlive = true
-        gridArray[1][5].isAlive = true
-        
-    }
     
     func populateGrid() {
         /* Populate the grid with creatures */
@@ -66,18 +37,20 @@ class Grid: SKSpriteNode {
             /* Loop through rows */
             for gridY in 0..<rows {
                 
-                /* Create a new creature at row / column position */
+                /* Createa new creature at row / column position */
                 addCreatureAtGrid(x:gridX, y:gridY)
             }
         }
     }
     
     func addCreatureAtGrid(x: Int, y: Int) {
+        /* Add a new creature at grid position*/
+        
         /* New creature object */
         let creature = Creature()
         
         /* Calculate position on screen */
-        let gridPosition = CGPoint(x: x*cellWidth, y: y*cellHeight)
+        let gridPosition = CGPoint(x: x*cellWidth, y: y*cellWidth)
         creature.position = gridPosition
         
         /* Set default isAlive */
@@ -88,6 +61,19 @@ class Grid: SKSpriteNode {
         
         /* Add creature to grid array */
         gridArray[x].append(creature)
+    }
+    
+    func evolve() {
+        /* Updated the grid to the next state in the game of life */
+        
+        /* Update all creature neighbor counts */
+        countNeighbors()
+        
+        /* Calculate all creatures alive or dead */
+        updateCreatures()
+        
+        /* Increment generation counter */
+        generation += 1
     }
     
     func countNeighbors() {
@@ -125,15 +111,20 @@ class Grid: SKSpriteNode {
                         /* Only interested in living creatures */
                         if adjacentCreature.isAlive {
                             currentCreature.neighborCount += 1
-                        }  
+                        }
+                        
                     }
-                }    
+                    
+                    
+                }
+                
             }
+            
         }
     }
     
     func updateCreatures() {
-        /* Process array and update creature status */
+        /* Process array and update creature neighbor count */
         
         /* Reset population counter */
         population = 0
@@ -161,20 +152,44 @@ class Grid: SKSpriteNode {
                 
                 /* Refresh population count */
                 if currentCreature.isAlive { population += 1 }
+                
             }
+            
+        }
+        
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        /* Called when a touch begins */
+        
+        /* There will only be one touch as multi touch is not enabled by default */
+        for touch in touches {
+            
+            /* Grab position of touch relative to the grid */
+            let location = touch.location(in: self)
+            
+            /* Caclulate grid array position */
+            let gridX = Int(location.x) / cellWidth
+            let gridY = Int(location.y) / cellHeight
+            
+            /* Toggle creature visibility */
+            let creature = gridArray[gridX][gridY]
+            creature.isAlive = !creature.isAlive
         }
     }
     
-    func evolve() {
-        /* Updated the grid to the next state in the game of life */
+    /* You are required to implement this for your subclass to work */
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
         
-        /* Update all creature neighbor counts */
-        countNeighbors()
+        /* Enable own touch implementation for this node */
+        isUserInteractionEnabled = true
         
-        /* Calculate all creatures alive or dead */
-        updateCreatures()
+        /* Calculate individual cell dimensions */
+        cellWidth = Int(size.width) / columns
+        cellHeight = Int(size.height) / rows
         
-        /* Increment generation counter */
-        generation += 1
+        /* Populate grid with creatures */
+        populateGrid()
     }
 }

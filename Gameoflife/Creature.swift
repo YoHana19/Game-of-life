@@ -1,3 +1,11 @@
+//
+//  Creature.swift
+//  Gameoflife
+//
+//  Created by Martin Walsh on 24/04/2016.
+//  Copyright © 2016 Make School. All rights reserved.
+//
+
 import SpriteKit
 
 class Creature: SKSpriteNode {
@@ -18,7 +26,7 @@ class Creature: SKSpriteNode {
         let texture = SKTexture(imageNamed: "bubble")
         super.init(texture: texture, color: UIColor.clear, size: texture.size())
         
-        /* Set Z-Position, ensure it's on top of grid */
+        /* Set Z-Position, ensure ontop of grid */
         zPosition = 1
         
         /* Set anchor point to bottom-left */
